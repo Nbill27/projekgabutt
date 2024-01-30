@@ -1,0 +1,129 @@
+import pygame
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Constants
+SCREEN_WIDTH, SCREEN_HEIGHT = 300, 600
+GRID_SIZE = 30
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+SHAPES = [
+    [[1, 1, 1, 1]],
+    [[1, 1], [1, 1]],
+    [[1, 1, 1], [0, 1, 0]],
+    [[1, 1, 1], [1, 0, 0]],
+    [[1, 1, 1], [0, 0, 1]],
+    [[1, 1, 0], [0, 1, 1]],
+    [[0, 1, 1], [1, 1, 0]]
+]
+
+# Tetris class
+class Tetris:
+    def __init__(self):
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.clock = pygame.time.Clock()
+        self.current_shape = self.new_shape()
+        self.grid = [[0] * (SCREEN_WIDTH // GRID_SIZE) for _ in range(SCREEN_HEIGHT // GRID_SIZE)]
+        self.game_over = False
+
+    def new_shape(self):
+        shape = random.choice(SHAPES)
+        color = RED
+        return {'shape': shape, 'color': color, 'x': SCREEN_WIDTH // 2, 'y': 0}
+
+    def draw_grid(self):
+        for y, row in enumerate(self.grid):
+            for x, cell in enumerate(row):
+                if cell:
+                    pygame.draw.rect(self.screen, cell, [x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE])
+
+    def draw_shape(self):
+        shape = self.current_shape['shape']
+        color = self.current_shape['color']
+        x, y = self.current_shape['x'], self.current_shape['y']
+
+        for i, row in enumerate(shape):
+            for j, cell in enumerate(row):
+                if cell:
+                    pygame.draw.rect(self.screen, color, [x + j * GRID_SIZE, y + i * GRID_SIZE, GRID_SIZE, GRID_SIZE])
+
+    def move_shape(self, dx, dy):
+        self.current_shape['x'] += dx
+        self.current_shape['y'] += dy
+
+    def rotate_shape(self):
+        self.current_shape['shape'] = list(zip(*reversed(self.current_shape['shape'])))
+
+    def check_collision(self):
+        shape = self.current_shape['shape']
+        x, y = self.current_shape['x'] // GRID_SIZE, self.current_shape['y'] // GRID_SIZE
+
+        for i, row in enumerate(shape):
+            for j, cell in enumerate(row):
+                if cell:
+                    if (
+                        x + j < 0 or x + j >= len(self.grid[0]) or
+                        y + i >= len(self.grid) or
+                        self.grid[y + i][x + j]
+                    ):
+                        return True
+        return False
+
+    def merge_shape(self):
+        shape = self.current_shape['shape']
+        x, y = self.current_shape['x'] // GRID_SIZE, self.current_shape['y'] // GRID_SIZE
+
+        for i, row in enumerate(shape):
+            for j, cell in enumerate(row):
+                if cell:
+                    self.grid[y + i][x + j] = self.current_shape['color']
+
+        self.current_shape = self.new_shape()
+
+    def check_line_clear(self):
+        for i, row in enumerate(self.grid):
+            if all(row):
+                del self.grid[i]
+                self.grid.insert(0, [0] * len(row))
+
+    def run(self):
+        while not self.game_over:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.game_over = True
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        self.move_shape(-GRID_SIZE, 0)
+                        if self.check_collision():
+                            self.move_shape(GRID_SIZE, 0)
+                    elif event.key == pygame.K_RIGHT:
+                        self.move_shape(GRID_SIZE, 0)
+                        if self.check_collision():
+                            self.move_shape(-GRID_SIZE, 0)
+                    elif event.key == pygame.K_DOWN:
+                        self.move_shape(0, GRID_SIZE)
+                        if self.check_collision():
+                            self.move_shape(0, -GRID_SIZE)
+                    elif event.key == pygame.K_UP:
+                        self.rotate_shape()
+
+            self.move_shape(0, GRID_SIZE)
+            if self.check_collision():
+                self.move_shape(0, -GRID_SIZE)
+                self.merge_shape()
+                self.check_line_clear()
+
+            self.screen.fill(WHITE)
+            self.draw_grid()
+            self.draw_shape()
+            pygame.display.flip()
+            self.clock.tick(5)
+
+        pygame.quit()
+
+# Run the game
+if __name__ == "__main__":
+    Tetris().run()
