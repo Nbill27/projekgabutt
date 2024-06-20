@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Khodam Online</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+        }
+        form {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Cek Khodam Online</h2>
+        <form id="khodamForm">
+            <label for="inputName">Nama:</label>
+            <input type="text" id="inputName" name="inputName" required>
+            <br>
+            <button type="submit">Check Khodam</button>
+        </form>
+
+        <div class="result" id="result">
+            <!-- Hasil -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('khodamForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const inputName = document.getElementById('inputName').value;
+            const khodams = ["Air Cucian Beras", "Api Menyala", "Angin Sejuk", "Batu Karang", "Cahaya Bulan", "Daun Rimbun", "Embun Pagi", "Gurun Pasir", "Hujan Deras", "Pelangi Indah", "Sungai Mengalir", "Tanah Subur", "Sepeda Ontel", "Titid Terbang", "Layangan Putus", "Baju Robek", "Buaya Putih", "Kuntilanak Merah", "Pocong Bambu", "Tuyul Emas"];
+            const khodamName = khodams[Math.floor(Math.random() * khodams.length)];
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<p><strong>Nama:</strong> ${inputName}</p>
+                                   <p><strong>Khodam:</strong> ${khodamName}</p>`;
+        });
+    </script>
+</body
